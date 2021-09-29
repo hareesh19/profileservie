@@ -21,22 +21,24 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RestController
 public class ProfileController {
 
 	@Autowired
 	ProfileService profileService;
 
-	
+
 	/**
      * The constant LOGGER.
      */
     private static final Logger  logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    
-    
+
     @PostMapping("/addprofile")
-	public Mono<Object> createProfile(@RequestBody Profile profile) {
+	public Mono<Object> createProfile(@Valid @RequestBody Profile profile) {
         logger.info("create profile request: {}", profile);
+
 		return profileService.checkPanNumber(profile.getPermanentAccountNumber()).collectList().flatMap(l -> {
 			if (l.isEmpty()) {
 				return profileService.createProfile(profile);
